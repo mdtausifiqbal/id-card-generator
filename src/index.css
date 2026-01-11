@@ -1,0 +1,17 @@
+body {
+  font-family: "Inter", sans-serif;
+  background-color: #f8fafc;
+}
+.id-card-container {
+  width: 324px; /* Approx 85.6mm at 96dpi */
+  height: 512px; /* Standard portrait ratio */
+  background: white;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+}
+@media print {
+  .no-print {
+    display: none;
+  }
+}
