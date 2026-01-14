@@ -1,7 +1,10 @@
+import { HeroUIProvider } from "@heroui/react";
 import { Analytics } from "@vercel/analytics/react";
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import SplashScreen from "./components/SplashScreen";
+import "./index.css";
+const App = lazy(() => import("./App"));
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -11,7 +14,11 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
-    <Analytics />
+    <HeroUIProvider>
+      <Suspense fallback={<SplashScreen />}>
+        <App />
+      </Suspense>
+      <Analytics />
+    </HeroUIProvider>
   </React.StrictMode>
 );

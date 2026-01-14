@@ -1,15 +1,12 @@
-import {
-  CompanyType,
-  EmployeeDetails,
-  IDCardState,
-  ServiceCenterDetails,
-} from "@/types";
-import html2canvas from "html2canvas";
+import AppNavbar from "@/components/AppNavbar";
+import EditorForm from "@/components/EditorForm";
+import { templates } from "@/components/templates";
+import { companyList } from "@/lib/companies";
+import { EmployeeDetails, IDCardState, ServiceCenterDetails } from "@/types";
+import { Spinner } from "@heroui/react";
+import html2canvas from "html2canvas-pro";
 import jsPDF from "jspdf";
-import { Download, IdCard, Save } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import EditorForm from "./components/EditorForm";
-import IDCardPreview from "./components/IDCardPreview";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 
 const currentFinancialYearEndingDate = () => {
   const now = new Date();
@@ -34,9 +31,10 @@ const DEFAULT_SC: ServiceCenterDetails = {
 
 const App: React.FC = () => {
   const [state, setState] = useState<IDCardState>({
-    company: CompanyType.VOLTAS,
+    company: companyList[0],
     employee: DEFAULT_EMPLOYEE,
-    serviceCenter: DEFAULT_SC,
+    sc: DEFAULT_SC,
+    template: templates.single,
   });
 
   const cardFrontRef = useRef<HTMLDivElement>(null);
@@ -48,7 +46,7 @@ const App: React.FC = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setState((prev) => ({ ...prev, serviceCenter: parsed }));
+        setState((prev) => ({ ...prev, sc: parsed }));
       } catch (e) {
         console.error("Failed to parse saved service center details", e);
       }
@@ -56,10 +54,7 @@ const App: React.FC = () => {
   }, []);
 
   const handleSaveSC = () => {
-    localStorage.setItem(
-      "service_center_details",
-      JSON.stringify(state.serviceCenter)
-    );
+    localStorage.setItem("service_center_details", JSON.stringify(state.sc));
     alert("Service Center details saved successfully!");
   };
 
@@ -84,47 +79,21 @@ const App: React.FC = () => {
     const imgDataFront = canvasFront.toDataURL("image/png");
     pdf.addImage(imgDataFront, "PNG", 0, 0, 54, 85.6);
 
-    // If it's Carrier, add a second page for Instructions
-    if (state.company === CompanyType.CARRIER && cardBackRef.current) {
+    if (cardBackRef.current) {
       pdf.addPage();
       const canvasBack = await html2canvas(cardBackRef.current, options);
       const imgDataBack = canvasBack.toDataURL("image/png");
       pdf.addImage(imgDataBack, "PNG", 0, 0, 54, 85.6);
     }
 
-    pdf.save(`${state.employee.name}_${state.company}_ID.pdf`);
+    pdf.save(
+      `${state.employee.name}_${state.company.name}_ID.pdf`.toLowerCase()
+    );
   };
 
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
-      <header className="bg-white border-b sticky top-0 z-10 shadow-sm">
-        <div className="max-w-9xl mx-auto px-4 py-4 flex flex-row md:items-center justify-between gap-2 md:gap-4">
-          <div className="flex items-center gap-2">
-            <div className="bg-blue-600 p-2 rounded-lg">
-              <IdCard className="text-white w-6 h-6" />
-            </div>
-            <h1 className="text-base md:text-xl font-bold text-slate-800">
-              ID Card Generator
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleSaveSC}
-              className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium"
-            >
-              <Save size={18} />
-              <span className="hidden md:inline-block">Save SC Details</span>
-            </button>
-            <button
-              onClick={downloadPDF}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow-lg"
-            >
-              <Download size={18} />
-              <span className="hidden md:inline-block">Download PDF</span>
-            </button>
-          </div>
-        </div>
-      </header>
+      <AppNavbar onSave={handleSaveSC} onDownload={downloadPDF} />
 
       <main className="max-w-9xl mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
         {/* Editor Side */}
@@ -140,23 +109,21 @@ const App: React.FC = () => {
 
         {/* Preview Side */}
         <div className="lg:col-span-7 flex flex-col items-center">
-          <div className="sticky top-28 w-full flex flex-col items-center space-y-8">
-            <h2 className="text-lg font-semibold text-slate-700 w-full text-center">
-              Live Preview
+          <div className="w-full flex flex-col items-center space-y-4 bg-content1 shadow-sm border border-slate-200 rounded-2xl p-6">
+            <h2 className="text-lg font-semibold w-full text-center">
+              Preview
             </h2>
 
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-              <div className="relative">
-                <IDCardPreview
-                  state={state}
-                  frontRef={cardFrontRef}
-                  backRef={cardBackRef}
-                />
-              </div>
-            </div>
+            <Suspense fallback={<Spinner />}>
+              <state.template.Component
+                company={state.company}
+                sc={state.sc}
+                employee={state.employee}
+                refs={[cardFrontRef, cardBackRef]}
+              />
+            </Suspense>
 
-            <p className="text-sm text-slate-500 text-center max-w-xs">
+            <p className="text-xs text-slate-500 text-center max-w-xs">
               The generated PDF will be exactly 85.6mm x 54mm (Standard ISO ID-1
               size).
             </p>

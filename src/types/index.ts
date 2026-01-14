@@ -1,10 +1,9 @@
 /// <reference types="./images.d.ts" />
 
-export enum CompanyType {
-  VOLTAS = "Voltas",
-  CARRIER = "Carrier",
-  DAIKIN = "Daikin",
-}
+import { Template } from "@/components/templates";
+import type { Company } from "@/lib/companies";
+
+export type { Company, CompanyName } from "@/lib/companies";
 
 export interface EmployeeDetails {
   name: string;
@@ -21,8 +20,16 @@ export interface ServiceCenterDetails {
   signatoryImage: string | null;
 }
 
-export interface IDCardState {
-  company: CompanyType;
+export interface TemplateProps extends React.HTMLAttributes<HTMLDivElement> {
+  company: Company;
   employee: EmployeeDetails;
-  serviceCenter: ServiceCenterDetails;
+  sc: ServiceCenterDetails;
+  refs: React.RefObject<HTMLDivElement>[];
+}
+
+export interface IDCardState {
+  template: Template;
+  company: Company;
+  employee: EmployeeDetails;
+  sc: ServiceCenterDetails;
 }

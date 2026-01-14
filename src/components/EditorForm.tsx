@@ -1,20 +1,20 @@
-import {
-  CompanyType,
-  EmployeeDetails,
-  IDCardState,
-  ServiceCenterDetails,
-} from "@/types";
+import { EmployeeDetails, IDCardState, ServiceCenterDetails } from "@/types";
+import { Input, Select, SelectItem, Textarea } from "@heroui/react";
 import {
   Briefcase,
+  BuildingIcon,
   Calendar,
   CreditCard,
   Home,
+  LayoutDashboardIcon,
   MapPin,
   Phone,
   User,
 } from "lucide-react";
 import React, { useRef } from "react";
+import { companies, companyList } from "../lib/companies";
 import SignatureCanvas from "./SignatureCanvas";
+import { templates } from "./templates";
 
 interface EditorFormProps {
   state: IDCardState;
@@ -34,7 +34,7 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
   const updateSC = (fields: Partial<ServiceCenterDetails>) => {
     setState((prev) => ({
       ...prev,
-      serviceCenter: { ...prev.serviceCenter, ...fields },
+      sc: { ...prev.sc, ...fields },
     }));
   };
 
@@ -56,29 +56,64 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
     }
   };
 
-  const companies = [
-    { type: CompanyType.VOLTAS, color: "bg-blue-700" },
-    { type: CompanyType.CARRIER, color: "bg-blue-900" },
-    { type: CompanyType.DAIKIN, color: "bg-cyan-500" },
-  ];
-
   return (
     <div className="space-y-10">
-      {/* Company Selection */}
-      <div className="grid grid-cols-3 gap-3">
-        {companies.map((c) => (
-          <button
-            key={c.type}
-            onClick={() => setState((prev) => ({ ...prev, company: c.type }))}
-            className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${
-              state.company === c.type
-                ? `${c.color} border-transparent text-white shadow-lg scale-105`
-                : "border-slate-100 bg-white text-slate-600 hover:border-blue-200"
-            }`}
-          >
-            <span className="font-bold text-xs md:text-sm">{c.type}</span>
-          </button>
-        ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <Select
+          isRequired
+          defaultSelectedKeys={["single"]}
+          label="Template"
+          placeholder="Select an template"
+          labelPlacement="outside-top"
+          startContent={
+            <LayoutDashboardIcon className="text-default-400" size={20} />
+          }
+          variant="bordered"
+          onChange={(e) =>
+            setState((prev) => ({
+              ...prev,
+              template: templates[e.target.value],
+            }))
+          }
+          value={state.template.id}
+        >
+          {Object.values(templates).map((template) => (
+            <SelectItem key={template.id}>{template.name}</SelectItem>
+          ))}
+        </Select>
+        <Select
+          isRequired
+          label="Company"
+          placeholder="Select Company"
+          showScrollIndicators
+          startContent={<BuildingIcon className="text-default-400" size={20} />}
+          variant="bordered"
+          labelPlacement="outside-top"
+          onChange={(e) =>
+            setState((prev) => ({
+              ...prev,
+              company: companies[e.target.value],
+            }))
+          }
+          value={state.company.name}
+          defaultSelectedKeys={[companyList[0].name]}
+        >
+          {companyList.map((c) => (
+            <SelectItem
+              key={c.name}
+              startContent={
+                <img
+                  src={`/${c.logo}`}
+                  width={36}
+                  className="h-auto bg-default-300"
+                  loading="lazy"
+                />
+              }
+            >
+              {c.name}
+            </SelectItem>
+          ))}
+        </Select>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -89,87 +124,69 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
             Employee Details
           </h3>
 
-          <div className="space-y-3">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Photo
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(e) => handlePhotoChange(e, "employeePhoto")}
-                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
-              />
-            </div>
+          <div className="flex flex-col gap-4">
+            <Input
+              type="file"
+              accept="image/*"
+              label="Photo"
+              variant="bordered"
+              labelPlacement="outside-top"
+              onChange={(e) => handlePhotoChange(e, "employeePhoto")}
+              classNames={{
+                inputWrapper: "p-0 shadow-none",
+                input:
+                  "inline-block file:p-2 file:px-4 file:mr-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition",
+              }}
+            />
 
-            <div className="relative">
-              <User
-                className="absolute left-3 top-9 text-slate-400"
-                size={16}
-              />
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={state.employee.name}
-                onChange={(e) => updateEmployee({ name: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-                placeholder="Enter Name"
-              />
-            </div>
+            <Input
+              isRequired
+              label="Name"
+              variant="bordered"
+              labelPlacement="outside-top"
+              placeholder="Enter name"
+              value={state.employee.name}
+              onChange={(e) => updateEmployee({ name: e.target.value })}
+              startContent={<User className="text-default-400" size={16} />}
+            />
 
-            <div className="relative">
-              <Briefcase
-                className="absolute left-3 top-9 text-slate-400"
-                size={16}
-              />
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Designation
-              </label>
-              <input
-                type="text"
-                value={state.employee.designation}
-                onChange={(e) =>
-                  updateEmployee({ designation: e.target.value })
-                }
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-                placeholder="Designation"
-              />
-            </div>
+            <Input
+              isRequired
+              label="Designation"
+              variant="bordered"
+              labelPlacement="outside-top"
+              placeholder="Enter designation"
+              value={state.employee.designation}
+              onChange={(e) => updateEmployee({ designation: e.target.value })}
+              startContent={
+                <Briefcase className="text-default-400" size={16} />
+              }
+            />
 
-            <div className="relative">
-              <CreditCard
-                className="absolute left-3 top-9 text-slate-400"
-                size={16}
-              />
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Emp ID / Number
-              </label>
-              <input
-                type="text"
-                value={state.employee.empId}
-                onChange={(e) => updateEmployee({ empId: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-                placeholder="Employee ID"
-              />
-            </div>
+            <Input
+              isRequired
+              label="Emp ID / Number"
+              variant="bordered"
+              labelPlacement="outside-top"
+              placeholder="Enter employee ID"
+              value={state.employee.empId}
+              onChange={(e) => updateEmployee({ empId: e.target.value })}
+              startContent={
+                <CreditCard className="text-default-400" size={16} />
+              }
+            />
 
-            <div className="relative">
-              <Calendar
-                className="absolute left-3 top-9 text-slate-400"
-                size={16}
-              />
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Valid Upto
-              </label>
-              <input
-                type="date"
-                value={state.employee.validUpto}
-                onChange={(e) => updateEmployee({ validUpto: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition"
-              />
-            </div>
+            <Input
+              isRequired
+              type="date"
+              label="Valid Upto"
+              variant="bordered"
+              labelPlacement="outside-top"
+              placeholder="Enter valid date"
+              value={state.employee.validUpto}
+              onChange={(e) => updateEmployee({ validUpto: e.target.value })}
+              startContent={<Calendar className="text-default-400" size={16} />}
+            />
           </div>
         </div>
 
@@ -180,71 +197,56 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
             Service Center Settings
           </h3>
 
-          <div className="space-y-3">
-            <div className="relative">
-              <Home
-                className="absolute left-3 top-9 text-slate-400"
-                size={16}
-              />
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                SC Name
-              </label>
-              <input
-                type="text"
-                value={state.serviceCenter.name}
-                onChange={(e) => updateSC({ name: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition"
-                placeholder="Service Center Name"
-              />
-            </div>
+          <div className="flex flex-col gap-4">
+            <Input
+              isRequired
+              label="SC Name"
+              variant="bordered"
+              labelPlacement="outside-top"
+              placeholder="Enter service center name"
+              value={state.sc.name}
+              onChange={(e) => updateSC({ name: e.target.value })}
+              startContent={<Home className="text-default-400" size={16} />}
+            />
 
-            <div className="relative">
-              <Phone
-                className="absolute left-3 top-9 text-slate-400"
-                size={16}
-              />
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Mobile / Tel
-              </label>
-              <input
-                type="text"
-                value={state.serviceCenter.mobile}
-                onChange={(e) => updateSC({ mobile: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition"
-                placeholder="Phone Numbers"
-              />
-            </div>
+            <Input
+              isRequired
+              label=" Mobile / Tel"
+              variant="bordered"
+              labelPlacement="outside-top"
+              placeholder="Enter mobile no"
+              value={state.sc.mobile}
+              onChange={(e) => updateSC({ mobile: e.target.value })}
+              startContent={<Phone className="text-default-400" size={16} />}
+            />
 
-            <div className="relative">
-              <MapPin
-                className="absolute left-3 top-9 text-slate-400"
-                size={16}
-              />
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Address
-              </label>
-              <textarea
-                value={state.serviceCenter.address}
-                onChange={(e) => updateSC({ address: e.target.value })}
-                rows={3}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none transition resize-none"
-                placeholder="Complete Address"
-              />
-            </div>
+            <Textarea
+              isRequired
+              label="Address"
+              variant="bordered"
+              labelPlacement="outside-top"
+              placeholder="Enter address"
+              value={state.sc.address}
+              onChange={(e) => updateSC({ address: e.target.value })}
+              startContent={<MapPin className="text-default-400" size={16} />}
+              classNames={{ innerWrapper: "py-3" }}
+              rows={3}
+            />
 
             <div className="flex flex-col gap-2">
-              <label className="text-xs font-semibold text-slate-500 uppercase ml-1">
-                Authorized Signatory
-              </label>
-
-              <div className="flex flex-col gap-1">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handlePhotoChange(e, "signatoryImage")}
-                  className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
-                />
-              </div>
+              <Input
+                type="file"
+                accept="image/*"
+                label="Authorized Signatory"
+                variant="bordered"
+                labelPlacement="outside-top"
+                onChange={(e) => handlePhotoChange(e, "signatoryImage")}
+                classNames={{
+                  inputWrapper: "p-0 shadow-none",
+                  input:
+                    "inline-block file:p-2 file:px-4 file:mr-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition",
+                }}
+              />
               <div>
                 <span className="text-[10px] text-slate-400 italic">
                   (Upload signature image or draw using canvas below)
@@ -252,7 +254,7 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
               </div>
               <SignatureCanvas
                 onSave={(img) => updateSC({ signatoryImage: img })}
-                currentImage={state.serviceCenter.signatoryImage}
+                currentImage={state.sc.signatoryImage}
               />
             </div>
           </div>
