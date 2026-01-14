@@ -248,7 +248,7 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
                 }}
               />
               <div>
-                <span className="text-[10px] text-slate-400 italic">
+                <span className="text-[10px] text-default-500 italic">
                   (Upload signature image or draw using canvas below)
                 </span>
               </div>
@@ -261,7 +261,7 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
         </div>
       </div>
 
-      <p className="text-xs text-slate-500 text-center">
+      <p className="text-xs text-default-500 text-center">
         DISCLAIMER: We don't collect any personal data. All data remains on your
         device.
       </p>

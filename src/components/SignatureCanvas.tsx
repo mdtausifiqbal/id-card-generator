@@ -1,13 +1,15 @@
-
-import React, { useRef, useEffect, useState } from 'react';
-import { Trash2, CheckCircle, PenTool } from 'lucide-react';
+import { CheckCircle, PenTool, Trash2 } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface SignatureCanvasProps {
   onSave: (imageData: string | null) => void;
   currentImage: string | null;
 }
 
-const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage }) => {
+const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
+  onSave,
+  currentImage,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isCanvasEmpty, setIsCanvasEmpty] = useState(true);
@@ -15,13 +17,13 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    ctx.strokeStyle = '#000080'; // Navy blue signature color
+    ctx.strokeStyle = "#000080"; // Navy blue signature color
     ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
   }, []);
 
   const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
@@ -33,7 +35,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage 
     setIsDrawing(false);
     const canvas = canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (ctx) ctx.beginPath();
     }
   };
@@ -42,13 +44,13 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage 
     if (!isDrawing) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const rect = canvas.getBoundingClientRect();
     let x, y;
 
-    if ('touches' in e) {
+    if ("touches" in e) {
       x = e.touches[0].clientX - rect.left;
       y = e.touches[0].clientY - rect.top;
     } else {
@@ -66,7 +68,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage 
   const clearCanvas = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     setIsCanvasEmpty(true);
@@ -76,7 +78,7 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage 
   const saveSignature = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    onSave(canvas.toDataURL('image/png'));
+    onSave(canvas.toDataURL("image/png"));
   };
 
   return (
@@ -95,14 +97,14 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage 
           onTouchEnd={stopDrawing}
           onTouchMove={draw}
         />
-        
+
         {isCanvasEmpty && !currentImage && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
-                <div className="flex flex-col items-center gap-1">
-                    <PenTool size={24} />
-                    <span className="text-xs">Draw signature here</span>
-                </div>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+            <div className="flex flex-col items-center gap-1">
+              <PenTool size={24} />
+              <span className="text-xs">Draw signature here</span>
             </div>
+          </div>
         )}
 
         <div className="absolute top-2 right-2 flex gap-1">
@@ -124,7 +126,9 @@ const SignatureCanvas: React.FC<SignatureCanvasProps> = ({ onSave, currentImage 
           )}
         </div>
       </div>
-      <p className="text-[10px] text-slate-400 text-center italic">Sign on canvas and click checkmark to apply.</p>
+      <p className="text-[10px] text-default-500 text-center italic">
+        Sign on canvas and click checkmark to apply.
+      </p>
     </div>
   );
 };

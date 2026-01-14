@@ -15,7 +15,11 @@ function AppNavbar({
   return (
     <Navbar maxWidth="full" isBlurred isBordered className="shadow-sm">
       <NavbarBrand className="gap-2">
-        <img src="/icon-192.png" style={{ width: "36px" }} loading="lazy" />
+        <img
+          src="/icon-192.png"
+          style={{ width: "36px", height: "36px" }}
+          alt="app logo"
+        />
         <p className="font-bold text-inherit">ID Card Generator</p>
       </NavbarBrand>
       <NavbarContent justify="end" className="gap-3">

@@ -17,7 +17,9 @@
       "@/*": ["./src/*"]
     },
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "sourceMap": true,
+    "declaration": true
   },
   "include": ["src/types/**/*.d.ts", "src/**/*"],
   "exclude": ["node_modules"]

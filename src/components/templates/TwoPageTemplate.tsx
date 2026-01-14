@@ -33,7 +33,7 @@ export default function TwoPageTemplate({
                 loading="lazy"
               />
             ) : (
-              <div className="w-full h-full bg-slate-100 flex items-center justify-center text-slate-400">
+              <div className="w-full h-full bg-content2 flex items-center justify-center text-content2-foreground">
                 No Photo
               </div>
             )}
