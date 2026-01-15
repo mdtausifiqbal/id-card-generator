@@ -105,7 +105,7 @@ const EditorForm: React.FC<EditorFormProps> = ({ state, setState }) => {
                 <img
                   src={`/${c.logo}`}
                   width={36}
-                  className="h-auto bg-default-300"
+                  className="h-auto bg-white"
                   loading="lazy"
                 />
               }

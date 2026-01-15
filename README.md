@@ -3,19 +3,23 @@
 This app allows service franchisee to create ID Card of their employee or staff.
 
 ## List Of Companies
-1. Carrier
-2. Daikin
-3. Godrej
-4. Haier
-5. Hitachi
-6. LG
-7. Lloyd
-8. Mitsubishi
-9. Ogeneral
-10. Panasonic
-11. Samsung
-12. Voltas
-13. Whirlpool
+
+1. Bluestar
+2. Carrier
+3. Daikin
+4. Godrej
+5. Haier
+6. Hitachi
+7. Intex
+8. LG
+9. Lloyd
+10. Mircromax
+11. Mitsubishi
+12. Ogeneral
+13. Panasonic
+14. Samsung
+15. Voltas
+16. Whirlpool
 
 ## Run Locally
 

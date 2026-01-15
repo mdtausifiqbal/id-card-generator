@@ -1,4 +1,9 @@
 export const companies = {
+  Bluestar: {
+    name: "Bluestar",
+    logo: "bluestar.png",
+    primaryColor: "#0033A0",
+  },
   Carrier: {
     name: "Carrier",
     logo: "carrier.png",
@@ -24,6 +29,11 @@ export const companies = {
     logo: "hitachi.png",
     primaryColor: "#E60012",
   },
+  Intex: {
+    name: "Intex",
+    logo: "intex.jpg",
+    primaryColor: "#ff0000",
+  },
   LG: {
     name: "LG",
     logo: "lg.png",
@@ -33,6 +43,11 @@ export const companies = {
     name: "Lloyd",
     logo: "lloyd_blue.png",
     primaryColor: "#0033A0",
+  },
+  Micromax: {
+    name: "Micromax",
+    logo: "micromax.png",
+    primaryColor: "#FFA500",
   },
   Mitsubishi: {
     name: "Mitsubishi",
